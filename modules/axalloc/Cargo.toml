@@ -14,11 +14,12 @@ default = ["tlsf"]
 tlsf = ["allocator/tlsf"]
 slab = ["allocator/slab"]
 buddy = ["allocator/buddy"]
+early = ["allocator/early"]
 
 [dependencies]
 log = "0.4"
 cfg-if = "1.0"
 spinlock = { path = "../../crates/spinlock" }
 memory_addr = { path = "../../crates/memory_addr" }
-allocator = { path = "../../crates/allocator", features = ["bitmap"] }
+allocator = { path = "../../crates/allocator", features = ["early","bitmap"]}
 axerrno = { path = "../../crates/axerrno" }
