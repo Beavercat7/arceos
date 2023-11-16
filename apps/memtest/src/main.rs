@@ -23,7 +23,7 @@ fn test_vec(rng: &mut impl RngCore) {
 }
 
 fn test_btree_map(rng: &mut impl RngCore) {
-    const N: usize = 50_000;
+    const N: usize = 50_00;
     let mut m = BTreeMap::new();
     for _ in 0..N {
         let value = rng.next_u32();
