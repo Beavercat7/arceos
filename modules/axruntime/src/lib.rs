@@ -21,7 +21,8 @@
 
 #[macro_use]
 extern crate axlog;
-
+extern crate axdtb;
+use axdtb::parse_dtb;
 #[cfg(all(target_os = "none", not(test)))]
 mod lang_items;
 mod trap;
@@ -136,9 +137,24 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
             r.flags
         );
     }
-
+ 
     #[cfg(feature = "alloc")]
     init_allocator();
+
+/// Parse fdt for early memory info
+let dtb_info = match parse_dtb(dtb.into()) {
+    Ok(info) => info,
+    Err(err) => panic!("Bad dtb {:?}", err),
+     };
+    
+    info!("DTB info: ==================================");
+    info!("Memory: {:#x}, size: {:#x}", dtb_info.memory_addr,
+    dtb_info.memory_size);
+    info!("Virtio_mmio[{}]:", dtb_info.mmio_regions.len());
+    for r in dtb_info.mmio_regions {
+    info!("\t{:#x}, size: {:#x}", r.0, r.1);
+    }
+    info!("============================================");
 
     #[cfg(feature = "paging")]
     {
@@ -189,6 +205,11 @@ pub extern "C" fn rust_main(cpu_id: usize, dtb: usize) -> ! {
         core::hint::spin_loop();
     }
 
+    {
+        let ga = axalloc::global_allocator();
+        info!("Used pages {} / Used bytes {}", ga.used_pages(),
+        ga.used_bytes()); 
+    }
     unsafe { main() };
 
     #[cfg(feature = "multitask")]
