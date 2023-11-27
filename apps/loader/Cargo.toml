@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 axstd = { path = "../../ulib/axstd",  optional = true }
+arceos_api = {path = "../../api/arceos_api", optional = true }
