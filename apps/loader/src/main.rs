@@ -5,15 +5,18 @@ use axstd::println;
 const PLASH_START: usize = 0x22000000;
 #[cfg_attr(feature = "axstd", no_mangle)]
 fn main() {
-  let apps_start = PLASH_START as *const u8;
+  let mut apps_start = PLASH_START as *const u8;
   let apps_size;
   unsafe
   {
+    apps_start = (PLASH_START + 40) as *const u8; //为了方便指定40为获取文件大小的地方
     apps_size = *apps_start as usize; // Dangerous!!! We need to get accurate size of apps. 
   }
   println!("Load payload ...");
+  apps_start =  PLASH_START as *const u8;
+  //apps_size = 115;
   let code = unsafe { core::slice::from_raw_parts(apps_start, apps_size)
 };
-  println!("content: {:?}: ", code);
+  println!("content: {:?}:  size: {}", code,apps_size);
   println!("Load payload ok!");
 }
