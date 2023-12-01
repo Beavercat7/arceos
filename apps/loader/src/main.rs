@@ -8,7 +8,6 @@ const PLASH_START: usize = 0x22000000;
 const SYS_HELLO: usize = 1;
 const SYS_PUTCHAR: usize = 2;
 const SYS_TERMINATE: usize = 3;
-const SYS_PUT:usize = 4;
 static mut ABI_TABLE: [usize; 16] = [0; 16];
 fn register_abi(num: usize, handle: usize) {
   unsafe { ABI_TABLE[num] = handle; }
@@ -25,16 +24,10 @@ fn abi_terminate()
   axstd::process::exit(1);
   //arceos_api::sys::ax_terminate();
 }
-fn abi_put(var:usize)
-{
-  println!("{:#x}",var);
-  //axstd::process::exit(1);
-  //arceos_api::sys::ax_terminate();
-}
 #[cfg_attr(feature = "axstd", no_mangle)]
 fn main() { 
   let load_start = PLASH_START as *const u8;
-  let load_size = 32; // Dangerous!!! We need to get accurate size of apps.
+  let load_size = 110; // Dangerous!!! We need to get accurate size of apps.
   println!("Load payload ...");
   let load_code = unsafe { core::slice::from_raw_parts(load_start,
 load_size) };
@@ -56,7 +49,6 @@ load_code.as_ptr());
     register_abi(SYS_HELLO, abi_hello as usize);
     register_abi(SYS_PUTCHAR, abi_putchar as usize);
     register_abi(SYS_TERMINATE, abi_terminate as usize);
-    register_abi(SYS_PUT, abi_put as usize);
     println!("Execute app ...");
 // execute app
 
